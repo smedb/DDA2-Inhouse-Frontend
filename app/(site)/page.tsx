@@ -12,29 +12,17 @@ import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
 import Blog from "@/components/Blog";
 import Testimonial from "@/components/Testimonial";
+import Signin from "@/components/Auth/Signin";
 
 export const metadata: Metadata = {
-  title: "Next.js Starter Template for SaaS Startups - Solid SaaS Boilerplate",
-  description: "This is Home for Solid Pro",
+  title: "XWallet - Internal",
   // other metadata
 };
 
 export default function Home() {
   return (
     <main>
-      <Hero />
-      <Brands />
-      <Feature />
-      <About />
-      <FeaturesTab />
-      <FunFact />
-      <Integration />
-      <CTA />
-      <FAQ />
-      <Testimonial />
-      <Pricing />
-      <Contact />
-      <Blog />
+      <Signin />
     </main>
   );
 }
