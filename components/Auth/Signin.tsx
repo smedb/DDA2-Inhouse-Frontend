@@ -26,11 +26,16 @@ const Signin = () => {
       );
       const token = response.data.token;
       const email = response.data.email;
+      const department = response.data.department;
+
       console.log(token);
       console.log(email);
+      console.log(department);
+
       // Guardar el token y el mail en el localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("mail", email);
+      localStorage.setItem("department", department);
   
       setError("");
       

@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,7 +10,8 @@ const Header = () => {
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Nuevo estado de carga
+  const [userDepartment, setUserDepartment] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const pathUrl = usePathname();
 
@@ -31,22 +33,40 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    const storedEmail = localStorage.getItem("mail");
-    console.log(localStorage.getItem("mail"))
-    if (storedEmail !== null) {
+    const loadUserData = () => {
+      const storedEmail = localStorage.getItem("mail");
+      const storedDepartment = localStorage.getItem("department");
       setUserEmail(storedEmail);
-    } else {
-      setUserEmail(null);
-    }
-    setIsLoading(false); // Marcar la verificación de autenticación como completada
+      setUserDepartment(storedDepartment);
+      setIsLoading(false);
+    };
+
+    // Load user data on mount
+    loadUserData();
+
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      loadUserData();
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const handleLogout = () => {
     // Clear user data from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("mail");
+    localStorage.removeItem("department");
     setUserEmail(null);
+    setUserDepartment(null);
+    
+    // Redirect to home page
+    window.location.href = "/";
   };
 
   return (
@@ -116,6 +136,21 @@ const Header = () => {
                   )}
                 </li>
               ))}
+              {/* Mostrar opción "Alta Empleados" y "Ver Empleados" si el usuario es Admin */}
+              {userDepartment === "Admin" && (
+                <li>
+                  <Link legacyBehavior href="/support">
+                    <a className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-primary">Alta Empleados</a>
+                  </Link>
+                </li>
+              )}
+              {userDepartment === "Admin" && (
+                <li>
+                  <Link legacyBehavior href="/userempleado">
+                    <a className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-primary">Ver Empleados</a>
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
 
@@ -126,7 +161,8 @@ const Header = () => {
             ) : userEmail ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">{userEmail}</span>
-                <button onClick={handleLogout} className="text-sm font-semibold text-primary hover:text-primary-dark">Logout</button>
+                <span className="bg-gray-200 dark:bg-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">{userDepartment}</span>
+                <button onClick={handleLogout} className="bg-red-200 dark:bg-red-700 text-sm font-semibold text-white-600 dark:text-white-400 px-2 py-1 rounded-full">Logout</button>
               </div>
             ) : null}
           </div>

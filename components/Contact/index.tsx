@@ -44,7 +44,9 @@ const Contact = () => {
           },
         ]
       });
-      setSuccessMessage(`Usuario creado con éxito: ${response.data.users[0].email}`);
+      console.log('API response:', response); // Log para verificar la respuesta completa
+      const userEmail = response.data[0].email; // Acceder al primer objeto del array
+      setSuccessMessage(`Usuario creado con éxito: ${userEmail}`);
       setEmailError(false);
     } catch (error) {
       if (error.response && error.response.status === 500) {
@@ -54,7 +56,8 @@ const Contact = () => {
       }
     }
   };
-
+  
+    
   return (
     <>
       {successMessage && (
@@ -75,18 +78,6 @@ const Contact = () => {
         <div className="relative mx-auto max-w-c-1390 px-7.5 pt-10 lg:px-15 lg:pt-15 xl:px-20 xl:pt-20">
           <div className="absolute left-0 top-0 -z-1 h-2/3 w-full rounded-lg bg-gradient-to-t from-transparent to-[#dee7ff47] dark:bg-gradient-to-t dark:to-[#252A42]"></div>
           <div className="absolute bottom-[-255px] left-0 -z-1 h-full w-full">
-            <Image
-              src="./images/shape/shape-dotted-light.svg"
-              alt="Dotted"
-              className="dark:hidden"
-              fill
-            />
-            <Image
-              src="./images/shape/shape-dotted-dark.svg"
-              alt="Dotted"
-              className="hidden dark:block"
-              fill
-            />
           </div>
 
           <div className="flex flex-col-reverse flex-wrap gap-8 md:flex-row md:flex-nowrap md:justify-center xl:gap-20">
@@ -233,7 +224,7 @@ const Contact = () => {
                       htmlFor="default-checkbox"
                       className="flex max-w-[425px] cursor-pointer select-none pl-5"
                     >
-                      Al hacer clic en esta casilla de verificación, confirmo que el nuevo empleado cumplió con el proceso de contratación y cumplimiento.
+                      Al hacer clic en esta casilla de verificación, confirmo que el nuevo empleado cumplió con el proceso de contratación y compliance.
                     </label>
                   </div>
 
@@ -243,7 +234,7 @@ const Contact = () => {
                       aria-label="register user"
                       className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
                     >
-                      Register User
+                      Registrar nuevo empleado
                       <svg
                         className="fill-white"
                         width="14"
