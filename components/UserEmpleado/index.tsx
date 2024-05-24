@@ -50,21 +50,29 @@ const UserEmpleado = () => {
     fetchEmployees();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (email: string) => {
     try {
       const token = localStorage.getItem("authToken");
-      await axios.delete(`https://api.inhouse.deliver.ar/users/employee/${id}`, {
+      console.log("Token:", token); // Verificar si el token se está obteniendo correctamente
+  
+      const response = await axios.delete('https://api.inhouse.deliver.ar/users/employee', {
         headers: {
-          Authorization: `${localStorage.getItem("authToken")}`,
+          Authorization: token,
         },
+        data: {
+          email: email
+        }
       });
-
-      setEmployees(employees.filter(employee => employee._id !== id));
+    
+      console.log("Response:", response); // Registrar la respuesta de la API para verificar si se completó con éxito
+    
+      setEmployees(employees.filter(employee => employee.email !== email));
     } catch (error) {
+      console.error("Error:", error); // Registrar cualquier error que ocurra durante la solicitud
       setError('Ops. Contacte a XWallet Help Desk y comparta el id: 0803');
     }
   };
-
+  
   if (!hasMounted) {
     return null;
   }
@@ -112,12 +120,12 @@ const UserEmpleado = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400">Gender: {employee.gender}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Birth Date: {new Date(employee.birthDate).toLocaleDateString()}</p>
                   <div className="flex justify-center mt-4">
-                    <button
-                      className="rounded bg-red-500 py-2 px-4 text-white hover:bg-red-700"
-                      onClick={() => handleDelete(employee._id)}
-                    >
-                      Eliminar acceso
-                    </button>
+                  <button
+                    className="rounded bg-red-500 py-2 px-4 text-white hover:bg-red-700"
+                    onClick={() => handleDelete(employee.email)}
+                  >
+                    Eliminar acceso
+                  </button>
                   </div>
                 </div>
               </motion.div>
