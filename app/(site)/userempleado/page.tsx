@@ -1,4 +1,4 @@
-import Review from "@/components/User - Empleado/index";
+import UserEmpleado from "@/components/UserEmpleado";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function UserView() {
   return (
     <>
-      <UserView />
+      <UserEmpleado />
     </>
   );
 }
