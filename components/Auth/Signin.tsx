@@ -3,13 +3,42 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import axios from "axios"; 
 
 const Signin = () => {
   const [data, setData] = useState({
     usuario: "",
     clave: "",
   });
+  const [error, setError] = useState("");
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "https://api.inhouse.deliver.ar/users/employee/login",
+        {
+          email: data.usuario,
+          password: data.clave
+        }
+      );
+      const token = response.data.token;
+      console.log(token);
+      
+      // Guardar el token en el localStorage
+      localStorage.setItem("authToken", token);
+  
+      setError("");
+    } catch (error) {
+      if (error.response && error.response.data.message === "Invalid login credentials.") {
+        setError("Credenciales de inicio de sesión incorrectas. Por favor, inténtalo de nuevo.");
+      } else {
+        setError("Error al iniciar sesión. Por favor, inténtalo de nuevo más tarde.");
+      }
+      console.error("Error al iniciar sesión:", error);
+    }
+  };
+  
   return (
     <>
       {/* <!-- ===== SignIn Form Start ===== --> */}
@@ -52,7 +81,7 @@ const Signin = () => {
               Accedé con SSO XWallet
             </h2>
 
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-7.5 flex flex-col items-center gap-7.5">
                 <input
                   type="text"
@@ -64,7 +93,7 @@ const Signin = () => {
                 />
 
                 <input
-                  type="clave"
+                  type="password" 
                   placeholder="Clave"
                   name="clave"
                   value={data.clave}
@@ -75,8 +104,15 @@ const Signin = () => {
                 />
               </div>
 
+              <div style={{ textAlign: 'center' }}>
+
+              {error && <p className="text-red-500">{error}</p>} {/* Mostrar el mensaje de error */}
+
+              </div>
+              
               <div className="flex justify-center"> 
                 <button
+                  type="submit" 
                   aria-label="login with email and password"
                   className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
                   style={{ margin: '20px' }} 

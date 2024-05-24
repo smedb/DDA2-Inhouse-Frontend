@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Contact = () => {
+const UserEmpleado = () => {
   const [hasMounted, setHasMounted] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -269,4 +269,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default UserEmpleado;
