@@ -180,12 +180,10 @@ const Contact = () => {
                     <option value="" disabled>
                       Departamento
                     </option>
-                    <option value="Finance">Analytics</option>
-                    <option value="Tech">Core Bancario</option>
-                    <option value="Client Services">Wallet</option>
-                    <option value="Admin">Crypto</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Tech">Tech</option>
+                    <option value="Client Services">Client Services</option>
                     <option value="Admin">Admin</option>
-                    <option value="Admin">Manager</option>
                   </select>
 
                   <input
