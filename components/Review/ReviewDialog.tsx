@@ -49,23 +49,22 @@ export default function ReviewDialog({
                 </p>
               </div>
               <div className="pl-20">
-                {user.picture && user.picture.length > 20 ? (
-                  <Image
-                    src={user.picture}
-                    alt="Foto del usuario"
-                    className="mx-auto"
-                    width={350}
-                    height={350}
-                  />
-                ) : (
-                  <Image
-                    src="/images/user/elon.png"
-                    alt="Foto del usuario"
-                    className="mx-auto"
-                    width={350}
-                    height={350}
-                  />
-                )}
+                <p className="font-bold">Foto del pasaporte</p>
+                <Image
+                  src={user.pictureIdPassport}
+                  alt="Foto del pasaporte"
+                  className="mx-auto py-2"
+                  width={250}
+                  height={250}
+                />
+                <p className="font-bold">Foto del usuario</p>
+                <Image
+                  src={user.pictureSelfie}
+                  alt="Foto del usuario"
+                  className="mx-auto py-2"
+                  width={250}
+                  height={250}
+                />
               </div>
             </div>
             <div className="flex justify-end">
