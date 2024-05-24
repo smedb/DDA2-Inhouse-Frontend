@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import axios from "axios"; 
+import axios from "axios";
+import { useRouter } from 'next/navigation'; 
 
 const Signin = () => {
   const [data, setData] = useState({
@@ -11,6 +12,7 @@ const Signin = () => {
     clave: "",
   });
   const [error, setError] = useState("");
+  const router = useRouter(); // Initialize the useRouter hook
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,12 +25,17 @@ const Signin = () => {
         }
       );
       const token = response.data.token;
+      const email = response.data.email;
       console.log(token);
-      
-      // Guardar el token en el localStorage
+      console.log(email);
+      // Guardar el token y el mail en el localStorage
       localStorage.setItem("authToken", token);
+      localStorage.setItem("mail", email);
   
       setError("");
+      
+      // Navigate to the user/review page upon successful login
+      router.push('/users/review');
     } catch (error) {
       if (error.response && error.response.data.message === "Invalid login credentials.") {
         setError("Credenciales de inicio de sesión incorrectas. Por favor, inténtalo de nuevo.");
@@ -106,7 +113,7 @@ const Signin = () => {
 
               <div style={{ textAlign: 'center' }}>
 
-              {error && <p className="text-red-500">{error}</p>} {/* Mostrar el mensaje de error */}
+              {error && <p className="text-red-500">{error}</p>} 
 
               </div>
               

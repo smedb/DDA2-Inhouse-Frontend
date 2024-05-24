@@ -20,18 +20,17 @@ const ErroPage = () => {
         />
 
         <h2 className="mb-5 text-2xl font-semibold text-black dark:text-white md:text-4xl">
-          This Page Does Not Exist
+          La página solicitada no existe en XWallet.
         </h2>
         <p className="mb-7.5">
-          The page you were looking for appears to have been moved, deleted or
-          does not exist.
+          Contactá a it@xwallet.com si necesitás ayuda.
         </p>
 
         <a
           href="/"
           className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
         >
-          Return to Home
+          Volver al Home
           <svg
             className="fill-white"
             width="14"
