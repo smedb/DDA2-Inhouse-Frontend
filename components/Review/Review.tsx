@@ -42,14 +42,19 @@ const Review = () => {
 
   const editUser = async (userId, value) => {
     try {
+      const bodyValue = {
+        approved: value,
+      };
+
       const response = await fetch(
         `https://api.inhouse.deliver.ar/users/${userId}`,
         {
           method: "PUT",
           headers: {
             Authorization: `${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(value),
+          body: JSON.stringify(bodyValue),
         },
       );
       if (response.status === 401) {
