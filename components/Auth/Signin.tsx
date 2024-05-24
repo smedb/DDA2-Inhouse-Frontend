@@ -24,7 +24,11 @@ const Signin = () => {
       );
       const token = response.data.token;
       console.log(token);
-      setError(""); 
+      
+      // Guardar el token en el localStorage
+      localStorage.setItem("authToken", token);
+  
+      setError("");
     } catch (error) {
       if (error.response && error.response.data.message === "Invalid login credentials.") {
         setError("Credenciales de inicio de sesión incorrectas. Por favor, inténtalo de nuevo.");
@@ -34,7 +38,7 @@ const Signin = () => {
       console.error("Error al iniciar sesión:", error);
     }
   };
-
+  
   return (
     <>
       {/* <!-- ===== SignIn Form Start ===== --> */}
