@@ -14,7 +14,7 @@ const Review = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
-  const [userList, setUserList] = useState<any>([]);
+  const [userList, setUserList] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,16 +40,36 @@ const Review = () => {
     fetchData();
   }, []);
 
-  const approveCurrentUser = () => {
+  const editUser = async (userId, value) => {
+    try {
+      const response = await fetch(
+        `https://api.inhouse.deliver.ar/users/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify(value),
+        },
+      );
+      if (response.status === 401) {
+        throw new Error("Unauthorized");
+      }
+      setUserList([...userList.filter((user) => user._id !== userId)]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const approveCurrentUser = async () => {
     setOpenDialog(false);
 
-    console.log("Aprobar");
+    await editUser(selectedUser._id, true);
   };
 
-  const rejectCurrentUser = () => {
+  const rejectCurrentUser = async () => {
     setOpenDialog(false);
 
-    console.log("Rechazar");
+    await editUser(selectedUser._id, false);
   };
 
   const reviewUser = (index) => {
@@ -100,27 +120,27 @@ const Review = () => {
 
             <form>
               <div className="mb-7.5 flex flex-col items-center gap-7.5">
-                <table className="table-auto border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="border px-4 py-2">Nombre</th>
-                      <th className="border px-4 py-2">Apellido</th>
-                      <th className="border px-4 py-2">Email</th>
-                      <th className="border px-4 py-2">Inmuebles</th>
-                      <th className="border px-4 py-2">Ingreso mensual</th>
-                      <th className="border px-4 py-2">Situación laboral</th>
-                      <th className="border px-4 py-2">Tiene Tesla</th>
-                      <th className="border px-4 py-2">
-                        Estado de verificación
-                      </th>
-                      <th className="border px-4 py-2">Puntaje de crédito</th>
-                      <th className="border px-4 py-2">Evaluación</th>
-                      <th className="border px-4 py-2">Ver</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userList &&
-                      userList.map((user, index) => (
+                {userList ? (
+                  <table className="table-auto border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="border px-4 py-2">Nombre</th>
+                        <th className="border px-4 py-2">Apellido</th>
+                        <th className="border px-4 py-2">Email</th>
+                        <th className="border px-4 py-2">Inmuebles</th>
+                        <th className="border px-4 py-2">Ingreso mensual</th>
+                        <th className="border px-4 py-2">Situación laboral</th>
+                        <th className="border px-4 py-2">Tiene Tesla</th>
+                        <th className="border px-4 py-2">
+                          Estado de verificación
+                        </th>
+                        <th className="border px-4 py-2">Puntaje de crédito</th>
+                        <th className="border px-4 py-2">Evaluación</th>
+                        <th className="border px-4 py-2">Ver</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userList.map((user, index) => (
                         <tr key={user._id}>
                           <td className="border px-4 py-2">{user.firstName}</td>
                           <td className="border px-4 py-2">{user.lastName}</td>
@@ -160,8 +180,11 @@ const Review = () => {
                           </td>
                         </tr>
                       ))}
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No hay usuarios para revisar</p>
+                )}
               </div>
             </form>
           </motion.div>
