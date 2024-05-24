@@ -1,25 +1,77 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Contact = () => {
-  /**
-   * Source: https://www.joshwcomeau.com/react/the-perils-of-rehydration/
-   * Reason: To fix rehydration error
-   */
-  const [hasMounted, setHasMounted] = React.useState(false);
-  React.useEffect(() => {
+  const [hasMounted, setHasMounted] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    gender: '',
+    monthlySalary: '',
+    department: '',
+    age: '',
+    birthDate: '',
+  });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [emailError, setEmailError] = useState(false);
+
+  useEffect(() => {
     setHasMounted(true);
   }, []);
+
   if (!hasMounted) {
     return null;
   }
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('https://api.inhouse.deliver.ar/users/employee', {
+        users: [
+          {
+            ...formData,
+            state: "state" // Assuming 'state' is a required field, you may modify or remove it as needed
+          },
+        ]
+      });
+      setSuccessMessage(`Usuario creado con éxito: ${response.data.users[0].email}`);
+      setEmailError(false);
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        setEmailError(true);
+      } else {
+        console.error('Error:', error);
+      }
+    }
+  };
+
   return (
     <>
-      {/* <!-- ===== Contact Start ===== --> */}
-      <section id="support" className="px-4 md:px-8 2xl:px-0">
+      {successMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-semibold">¡Éxito!</h2>
+            <p>{successMessage}</p>
+            <button
+              onClick={() => setSuccessMessage('')}
+              className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+      <section id="support" className="px-4 md:px-8 2xl:px-0 flex items-center justify-center min-h-screen">
         <div className="relative mx-auto max-w-c-1390 px-7.5 pt-10 lg:px-15 lg:pt-15 xl:px-20 xl:pt-20">
           <div className="absolute left-0 top-0 -z-1 h-2/3 w-full rounded-lg bg-gradient-to-t from-transparent to-[#dee7ff47] dark:bg-gradient-to-t dark:to-[#252A42]"></div>
           <div className="absolute bottom-[-255px] left-0 -z-1 h-full w-full">
@@ -37,14 +89,13 @@ const Contact = () => {
             />
           </div>
 
-          <div className="flex flex-col-reverse flex-wrap gap-8 md:flex-row md:flex-nowrap md:justify-between xl:gap-20">
+          <div className="flex flex-col-reverse flex-wrap gap-8 md:flex-row md:flex-nowrap md:justify-center xl:gap-20">
             <motion.div
               variants={{
                 hidden: {
                   opacity: 0,
                   y: -20,
                 },
-
                 visible: {
                   opacity: 1,
                   y: 0,
@@ -57,50 +108,104 @@ const Contact = () => {
               className="animate_top w-full rounded-lg bg-white p-7.5 shadow-solid-8 dark:border dark:border-strokedark dark:bg-black md:w-3/5 lg:w-3/4 xl:p-15"
             >
               <h2 className="mb-15 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
-                Send a message
+                Alta de empleado
               </h2>
 
-              <form
-                action="https://formbold.com/s/unique_form_id"
-                method="POST"
-              >
+              <form onSubmit={handleSubmit}>
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
-                    placeholder="Full name"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
-
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
-                  />
-                </div>
-
-                <div className="mb-12.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
-                  <input
-                    type="text"
-                    placeholder="Subject"
+                    name="firstName"
+                    placeholder="Nombre"
+                    value={formData.firstName}
+                    onChange={handleChange}
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
 
                   <input
                     type="text"
-                    placeholder="Phone number"
+                    name="lastName"
+                    placeholder="Apellido"
+                    value={formData.lastName}
+                    onChange={handleChange}
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
                 </div>
 
-                <div className="mb-11.5 flex">
-                  <textarea
-                    placeholder="Message"
-                    rows={4}
-                    className="w-full border-b border-stroke bg-transparent focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
-                  ></textarea>
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
+                  <div className="w-full lg:w-1/2">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Mail"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={`w-full border-b ${emailError ? 'border-red-500' : 'border-stroke'} bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
+                    />
+                    {emailError && <p className="mt-3 text-xs text-red-500">*Mail ya registrado</p>}
+                  </div>
+
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Clave"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
+                  />
                 </div>
 
-                <div className="flex flex-wrap gap-4 xl:justify-between ">
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee lg:w-1/2"
+                  >
+                    <option value="" disabled>
+                      Sexo
+                    </option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                  </select>
+
+                  <input
+                    type="number"
+                    name="monthlySalary"
+                    placeholder="Sueldo"
+                    value={formData.monthlySalary}
+                    onChange={handleChange}
+                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
+                  />
+                </div>
+
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
+                  <select
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee lg:w-1/2"
+                  >
+                    <option value="" disabled>
+                      Departamento
+                    </option>
+                    <option value="Finance">Finance</option>
+                    <option value="Tech">Tech</option>
+                    <option value="Client Services">Client Services</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+
+                  <input
+                    type="date"
+                    name="birthDate"
+                    placeholder="Birth Date"
+                    value={formData.birthDate}
+                    onChange={handleChange}
+                    className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
+                  />
+                </div>
+
+                <div className="flex flex-wrap gap-4 xl:justify-between">
                   <div className="mb-4 flex md:mb-0">
                     <input
                       id="default-checkbox"
@@ -128,83 +233,38 @@ const Contact = () => {
                       htmlFor="default-checkbox"
                       className="flex max-w-[425px] cursor-pointer select-none pl-5"
                     >
-                      By clicking Checkbox, you agree to use our “Form” terms
-                      And consent cookie usage in browser.
+                      Al hacer clic en esta casilla de verificación, confirmo que el nuevo empleado cumplió con el proceso de contratación y cumplimiento.
                     </label>
                   </div>
 
-                  <button
-                    aria-label="send message"
-                    className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
-                  >
-                    Send Message
-                    <svg
-                      className="fill-white"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                  <div className="flex justify-center w-full">
+                    <button
+                      type="submit"
+                      aria-label="register user"
+                      className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
                     >
-                      <path
-                        d="M10.4767 6.16664L6.00668 1.69664L7.18501 0.518311L13.6667 6.99998L7.18501 13.4816L6.00668 12.3033L10.4767 7.83331H0.333344V6.16664H10.4767Z"
-                        fill=""
-                      />
-                    </svg>
-                  </button>
+                      Register User
+                      <svg
+                        className="fill-white"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.4767 6.16664L6.00668 1.69664L7.18501 0.518311L13.6667 6.99998L7.18501 13.4816L6.00668 12.3033L10.4767 7.83331H0.333344V6.16664H10.4767Z"
+                          fill=""
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </form>
-            </motion.div>
-
-            <motion.div
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: -20,
-                },
-
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                },
-              }}
-              initial="hidden"
-              whileInView="visible"
-              transition={{ duration: 2, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="animate_top w-full md:w-2/5 md:p-7.5 lg:w-[26%] xl:pt-15"
-            >
-              <h2 className="mb-12.5 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
-                Find us
-              </h2>
-
-              <div className="5 mb-7">
-                <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Our Loaction
-                </h3>
-                <p>290 Maryam Springs 260, Courbevoie, Paris, France</p>
-              </div>
-              <div className="5 mb-7">
-                <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Email Address
-                </h3>
-                <p>
-                  <a href="#">yourmail@domainname.com</a>
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Phone Number
-                </h4>
-                <p>
-                  <a href="#">+009 42334 6343 843</a>
-                </p>
-              </div>
             </motion.div>
           </div>
         </div>
       </section>
-      {/* <!-- ===== Contact End ===== --> */}
     </>
   );
 };
