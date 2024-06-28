@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { read, utils } from 'xlsx';
 
 const Contact = () => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -56,8 +57,8 @@ const Contact = () => {
       }
     }
   };
-  
-    
+
+
   return (
     <>
       {successMessage && (
@@ -250,9 +251,70 @@ const Contact = () => {
                         />
                       </svg>
                     </button>
+
                   </div>
+                  <div className="flex justify-center w-full">
+
+                    <button
+                      type="button"
+                      onClick={() => document?.getElementById('upload')?.click()}
+                      aria-label="register users in batch (upload excel)"
+                      className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
+                    >
+                      Importar empleados con Excel
+                    </button>
+                    <input
+                      type="file"
+                      id="upload"
+                      accept=".xlsx"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e?.target?.files ? e.target.files[0] : null;
+                        const reader = new FileReader();
+
+                        const formatDate = (dateNumber: number) => {
+                          const date = new Date((dateNumber - (25567 + 1)) * 86400 * 1000);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          return `${year}-${month}-${day}`;
+                        };
+                        reader.onload = async (event) => {
+                          const data = event?.target?.result ? new Uint8Array(event.target.result as ArrayBuffer) : null;
+                          const workbook = read(data, { type: 'array' });
+                          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                          const json = utils.sheet_to_json(worksheet);
+                          const employees = json.map((row) => ({
+                            firstName: row ? row['Name'] : null,
+                            lastName: row ? row['Last Name'] : null,
+                            email: row ? row['Mail'] : null,
+                            gender: row ? row['Gender'] : null,
+                            monthlySalary: row ? row['Salary'] : null,
+                            department: row ? row['Department'] : null,
+                            birthDate: row ? formatDate(row['Date of Birth']) : null,
+                            state: 'state',
+                            password: 'xwallet123',
+                          }));
+
+                          try {
+                            const response = await axios.post('https://api.inhouse.deliver.ar/users/employee', {
+                              users: employees,
+                            });
+                            console.log('API response:', response);
+                            setSuccessMessage('Empleados creados correctamente!');
+                          } catch (error) {
+                            console.error('Error uploading employees:', error);
+                          }
+                        };
+                        file ? reader.readAsArrayBuffer(file as unknown as Blob) : null;
+
+                      }}
+                    />
+                  </div>
+
                 </div>
               </form>
+
             </motion.div>
           </div>
         </div>
